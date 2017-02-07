@@ -2,7 +2,7 @@ class GroupsController < ApplicationController
   before_action :authenticate_user!,only: [:new,:create,:show,:edit,:update,:destroy]
   before_action :find_group_and_check_permission,only: [:edit,:update,:destroy]
   def index
-    @groups = Group.all.paginate(:page =>params[:page], :per_page => 5)
+    @groups = Group.all.order("created_at DESC").paginate(:page =>params[:page], :per_page => 10)
   end
   def new
     @group = Group.new
@@ -11,6 +11,7 @@ class GroupsController < ApplicationController
     @group = Group.new(group_params)
     @group.user = current_user
   if  @group.save
+    current_user.join!(@group)
     redirect_to groups_path
   else
     render :new
